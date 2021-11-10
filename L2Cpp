@@ -11,10 +11,12 @@ struct Node {
     }
     void put(char ch, Node* node) {
         links[ch-'a'] = node; 
-        cntPrefix++; 
     }
-    void setEnd() {
-        cntEndWith++; 
+    void increaseEnd() {
+        cntEndWith++;  
+    }
+    void increasePrefix() {
+        cntPrefix++; 
     }
     void deleteEnd() {
         cntEndWith--; 
@@ -22,8 +24,11 @@ struct Node {
     void reducePrefix() {
         cntPrefix--; 
     }
-    int isEnd() {
+    int getEnd() {
         return cntEndWith; 
+    }
+    int getPrefix() {
+        return cntPrefix; 
     }
 }; 
 class Trie{
@@ -37,50 +42,51 @@ public:
     /** Inserts a word into the trie. */
     void insert(string word) {
         Node *node = root;
-        for(int i = 0;i<word.size();i++) {
+        for(int i = 0;i<word.length();i++) {
             if(!node->containsKey(word[i])) {
                 node->put(word[i], new Node()); 
             }
             node = node->get(word[i]); 
+            node->increasePrefix(); 
         }
-        node->setEnd(); 
+        node->increaseEnd(); 
     }
     
     int countWordsEqualTo(string &word){
-        Node *node = root;
-        for(int i = 0;i<word.size();i++) {
-            if(!node->containsKey(word[i])) {
-                node = node->get(word[i]); 
+        Node* node = root;
+        for(int i = 0;i<word.length();i++) {
+            if(node->containsKey(word[i])) {
+                node = node->get(word[i]);
             }
             else {
                 return 0; 
-            }
+            }  
         }
-        return node->cntEndWith; 
+        return node->getEnd(); 
     }
 
     int countWordsStartingWith(string &word){
-        Node *node = root;
-        for(int i = 0;i<word.size();i++) {
-            if(!node->containsKey(word[i])) {
-                node = node->get(word[i]); 
+        Node* node = root;
+        for(int i = 0;i<word.length();i++) {
+            if(node->containsKey(word[i])) {
+                node = node->get(word[i]);
             }
             else {
                 return 0; 
-            }
+            }  
         }
-        return node->cntPrefix;
+        return node->getPrefix(); 
     }
 
     void erase(string &word){
-        Node *node = root;
-        for(int i = 0;i<word.size();i++) {
-            if(!node->containsKey(word[i])) {
+        Node* node = root;
+        for(int i = 0;i<word.length();i++) {
+            if(node->containsKey(word[i])) {
+                node = node->get(word[i]);
                 node->reducePrefix(); 
-                node = node->get(word[i]); 
             }
             else {
-                return; 
+                return;
             }
         }
         node->deleteEnd(); 
