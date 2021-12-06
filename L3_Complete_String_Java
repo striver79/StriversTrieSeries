@@ -1,49 +1,56 @@
-struct Node {
-    Node *links[26]; 
-    bool flag = false; 
+class Node {
+    Node[] links = new Node[26];
+    boolean flag = false; 
     
-    bool containsKey(char ch) {
-        return (links[ch - 'a'] != NULL); 
+    boolean containsKey(char ch) {
+        return links[ch - 'a'] != null; 
     }
-    Node* get(char ch) {
+    Node get(char ch) {
         return links[ch-'a']; 
     }
-    void put(char ch, Node* node) {
+    void put(char ch, Node node) {
         links[ch-'a'] = node; 
     }
-    void setEnd() {
+    void setEnd() { 
+        // a better name would have been markAsEnd();
+        // since you aren't exactly setting the value with something
+        // still kept the original name to be consistent with naming
         flag = true; 
     }
-    bool isEnd() {
+    boolean isEnd() {
         return flag; 
     }
-}; 
+}
+
 class Trie {
-    private: Node *root; 
-public:
+    private Node root;
     /** Initialize your data structure here. */
-    Trie() {
+    public Trie() {
         root = new Node(); 
     }
     
     /** Inserts a word into the trie. */
-    void insert(string word) {
-        Node *node = root;
-        for(int i = 0;i<word.size();i++) {
-            if(!node->containsKey(word[i])) {
-                node->put(word[i], new Node()); 
+    public void insert(String word) {
+        Node node = root;
+        int wordLength = word.length();
+        for(int i = 0;i<wordLength;i++) {
+            char currChar = word.charAt(i);
+            if(!node.containsKey(currChar)) {
+                node.put(currChar, new Node()); 
             }
-            node = node->get(word[i]); 
+            node = node.get(currChar); 
         }
-        node->setEnd(); 
+        node.setEnd(); 
     }
-    bool checkIfAllPrefixExists(string word) {
-        Node *node = root;
-        bool flag = true; 
-        for(int i = 0;i<word.size() && flag;i++) {
-            if(node->containsKey(word[i])) {
-                node = node->get(word[i]); 
-                flag = flag & node->isEnd(); 
+    public boolean checkIfAllPrefixExists(String word) {
+        Node node = root;
+        boolean flag = true; 
+        int wordLength = word.length();
+        for(int i = 0;i<wordLength && flag;i++) {
+            char currChar = word.charAt(i);
+            if(node.containsKey(currChar)) {
+                node = node.get(currChar); 
+                flag = flag & node.isEnd(); 
             }
             else {
                 return false; 
@@ -51,21 +58,25 @@ public:
         }
         return flag; 
     }
-};
-string completeString(int n, vector<string> &a){
-    Trie* obj = new Trie();
-    for(auto word : a) obj->insert(word); 
-    string longest = ""; 
-    for(auto word: a) {
-        if(obj->checkIfAllPrefixExists(word)) {
-            if(word.size() > longest.size()) {
-                longest = word; 
-            }
-            else if(word.size() == longest.size() && word < longest) {
-                longest = word; 
+}
+
+class Solution {
+
+    static String completeString(int n, String[] a){
+        Trie obj = new Trie();
+        for(String word : a) obj.insert(word); 
+        String longest = ""; 
+        for(String word: a) {
+            if(obj.checkIfAllPrefixExists(word)) {
+                if(word.length() > longest.length()) {
+                    longest = word; 
+                }
+                else if(word.length() == longest.length() && word.compareTo(longest) < 0) {
+                    longest = word; 
+                }
             }
         }
+        if(longest.equals("")) return "None"; 
+        return longest; 
     }
-    if(longest == "") return "None"; 
-    return longest; 
 }
